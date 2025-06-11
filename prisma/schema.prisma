@@ -1,0 +1,47 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum DayOfWeek {
+  SUNDAY     @map("0")
+  MONDAY     @map("1")
+  TUESDAY    @map("2")
+  WEDNESDAY  @map("3")
+  THURSDAY   @map("4")
+  FRIDAY     @map("5")
+  SATURDAY   @map("6")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String   @map("user_name")
+
+  appointments Appointment[]
+}
+
+model Appointment {
+  id        String      @id @default(uuid())
+
+  day       DayOfWeek  
+  hour      String      @map("hour")
+
+  userId    String
+  user      User        @relation(fields: [userId], references: [id])
+
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  @@map("appointments")
+}
